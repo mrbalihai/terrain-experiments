@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "dat.gui": "^0.7.7",
     "three": "^0.121.1",
     "three-fly-controls": "^2.0.0"
   },
   "devDependencies": {
-    "budo": "^11.6.4"
+    "browserify": "^17.0.0",
+    "http-server": "^0.12.3"
   },
   "scripts": {
-    "start": "budo index.js --live",
+    "start": "http-server",
+    "build": "browserify index.js > dist/script.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
