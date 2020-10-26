@@ -8,6 +8,7 @@ import { EffectComposer } from './node_modules/three/examples/jsm/postprocessing
 import { RenderPass } from './node_modules/three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from './node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from './node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
+import { BokehPass } from './node_modules/three/examples/jsm/postprocessing/BokehPass.js';
 
 import { RGBShiftShader } from './node_modules/three/examples/jsm/shaders/RGBShiftShader.js';
 import { DotScreenShader } from './node_modules/three/examples/jsm/shaders/DotScreenShader.js';
@@ -34,17 +35,21 @@ const init = () => {
 
     composer = new EffectComposer( renderer );
     composer.addPass( new RenderPass( scene, camera ) );
-    var effect = new ShaderPass( RGBShiftShader );
-    effect.uniforms[ 'amount' ].value = 0.0005;
-    composer.addPass(effect);
-    var bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
     bloomPass.threshold = 0;
-    bloomPass.strength = 1.5;
+    bloomPass.strength = 0.5;
     bloomPass.radius = 0;
     composer.addPass(bloomPass);
-    //var effect = new ShaderPass( DotScreenShader );
-    //effect.uniforms[ 'scale' ].value = 4;
-    //composer.addPass( effect );
+
+    const bokehPass = new BokehPass(scene, camera, {
+        focus: 3.0,
+        aperture: 0.0009,
+        maxblur: 0.009,
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+
+    composer.addPass(bokehPass);
 
     document.body.append(renderer.domElement);
 
