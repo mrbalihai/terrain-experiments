@@ -4,9 +4,17 @@ import * as THREE from './node_modules/three/build/three.module.js';
 import { GUI } from './node_modules/three/examples/jsm/libs/dat.gui.module.js';
 import { FlyControls } from './node_modules/three/examples/jsm/controls/FlyControls.js';
 import { Sky } from './node_modules/three/examples/jsm/objects/Sky.js';
+import { EffectComposer } from './node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './node_modules/three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from './node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
+
+import { RGBShiftShader } from './node_modules/three/examples/jsm/shaders/RGBShiftShader.js';
+import { DotScreenShader } from './node_modules/three/examples/jsm/shaders/DotScreenShader.js';
+
 
 let camera, scene, renderer, geom, material, mesh, clock, controls;
 let material2, mesh2;
+let composer;
 
 let sun, sky;
 
@@ -22,6 +30,16 @@ const init = () => {
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.5;
+
+    composer = new EffectComposer( renderer );
+    composer.addPass( new RenderPass( scene, camera ) );
+    // var effect = new ShaderPass( DotScreenShader );
+    // effect.uniforms[ 'scale' ].value = 4;
+    // composer.addPass( effect );
+    var effect = new ShaderPass( RGBShiftShader );
+    effect.uniforms[ 'amount' ].value = 0.001;
+    composer.addPass( effect );
+
     document.body.append(renderer.domElement);
 
     controls = new FlyControls(camera, document.body);
@@ -108,7 +126,7 @@ function animate() {
     const delta = clock.getDelta();
     requestAnimationFrame(animate);
     controls.update(delta);
-    renderer.render(scene, camera);
+    composer.render(scene, camera);
 }
 
 init();
