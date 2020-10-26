@@ -9,7 +9,7 @@ const init = () => {
     clock = new THREE.Clock();
 
     Object.assign(document.body.style, { margin: 0, overflow: 'hidden' });
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
     camera.lookAt(0, 0.1, 0);
     camera.position.set(6, 6, 6);
     scene = new THREE.Scene();
