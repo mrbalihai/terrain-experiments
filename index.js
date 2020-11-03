@@ -1,17 +1,17 @@
 'use strict';
 
-import * as THREE from './node_modules/three/build/three.module.js';
-import { GUI } from './node_modules/three/examples/jsm/libs/dat.gui.module.js';
-import { FlyControls } from './node_modules/three/examples/jsm/controls/FlyControls.js';
-import { Sky } from './node_modules/three/examples/jsm/objects/Sky.js';
-import { EffectComposer } from './node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from './node_modules/three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from './node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from './node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
-import { BokehPass } from './node_modules/three/examples/jsm/postprocessing/BokehPass.js';
+import * as THREE from './lib/three/build/three.module.js';
+import { GUI } from './lib/three/examples/jsm/libs/dat.gui.module.js';
+import { FlyControls } from './lib/three/examples/jsm/controls/FlyControls.js';
+import { Sky } from './lib/three/examples/jsm/objects/Sky.js';
+import { EffectComposer } from './lib/three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './lib/three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from './lib/three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from './lib/three/examples/jsm/postprocessing/ShaderPass.js';
+import { BokehPass } from './lib/three/examples/jsm/postprocessing/BokehPass.js';
 
-import { RGBShiftShader } from './node_modules/three/examples/jsm/shaders/RGBShiftShader.js';
-import { DotScreenShader } from './node_modules/three/examples/jsm/shaders/DotScreenShader.js';
+import { RGBShiftShader } from './lib/three/examples/jsm/shaders/RGBShiftShader.js';
+import { DotScreenShader } from './lib/three/examples/jsm/shaders/DotScreenShader.js';
 
 
 let camera, scene, renderer, geom, material, mesh, clock, controls;

@@ -11,7 +11,8 @@
   },
   "scripts": {
     "start": "http-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cp -r node_modules/three ./lib/"
   },
   "keywords": [],
   "author": "",
