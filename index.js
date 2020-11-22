@@ -1,41 +1,35 @@
-'use strict';
-
 import * as THREE from './lib/three/build/three.module.js';
-import { GUI } from './lib/three/examples/jsm/libs/dat.gui.module.js';
 import { FlyControls } from './lib/three/examples/jsm/controls/FlyControls.js';
 import { Sky } from './lib/three/examples/jsm/objects/Sky.js';
 import { EffectComposer } from './lib/three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from './lib/three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from './lib/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from './lib/three/examples/jsm/postprocessing/ShaderPass.js';
 import { BokehPass } from './lib/three/examples/jsm/postprocessing/BokehPass.js';
 
-import { RGBShiftShader } from './lib/three/examples/jsm/shaders/RGBShiftShader.js';
-import { DotScreenShader } from './lib/three/examples/jsm/shaders/DotScreenShader.js';
-
-
-let camera, scene, renderer, geom, material, mesh, clock, controls;
-let material2, mesh2;
-let composer;
-
-let sun, sky;
+let camera, scene, renderer,
+    geom, material, mesh, material2, mesh2,
+    clock, controls,  composer,
+    sun, sky;
 
 const init = () => {
+    // Create a clock to track a delta between requestAnimationFrame
+    // Is used to keep the FlyControls animation is smooth
     clock = new THREE.Clock();
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 50);
     camera.position.set(0, 4.5, 0);
     scene = new THREE.Scene();
 
-    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.5;
 
-    composer = new EffectComposer( renderer );
-    composer.addPass( new RenderPass( scene, camera ) );
-    const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+    // Add bloom and bokeh post processing to give it an etherial feel
+    composer = new EffectComposer(renderer);
+    composer.addPass( new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     bloomPass.threshold = 0;
     bloomPass.strength = 0.5;
     bloomPass.radius = 0;
@@ -48,10 +42,7 @@ const init = () => {
         width: window.innerWidth,
         height: window.innerHeight
     });
-
     composer.addPass(bokehPass);
-
-    document.body.append(renderer.domElement);
 
     controls = new FlyControls(camera, document.body);
     controls.movementSpeed = 2;
@@ -70,6 +61,9 @@ const init = () => {
         for (let i = 0, l = geom.vertices.length; i < l; i++) {
             geom.vertices[i].z = data[i] / 65535 * 5;
         }
+
+        // Create a duplicate mesh that sits below that is all black so you can't see through the wire mesh.
+        // This is really inefficient and clunky and would be much beter in a shder
         material = new THREE.MeshBasicMaterial({ color: 0xEA16D9, wireframe: true });
         material2 = new THREE.MeshBasicMaterial({ color: 0x000000 });
         mesh = new THREE.Mesh(geom, material);
@@ -81,59 +75,39 @@ const init = () => {
         scene.add(mesh2);
     });
 
+    document.body.append(renderer.domElement);
 }
 
-function initSky() {
+function initSky () {
 
+    // The magic numbers below are set through trial and error
+    // untill I achieved the effect I wanted
     sky = new Sky();
-    sky.scale.setScalar( 450000 );
-    scene.add( sky );
+    sky.scale.setScalar(450000);
+    scene.add(sky);
 
     sun = new THREE.Vector3();
 
-    var effectController = {
-        turbidity: 10,
-        rayleigh: 3,
-        mieCoefficient: 0.1,
-        mieDirectionalG: 0.941,
-        inclination: 0.5074, // elevation / inclination
-        azimuth: 0.25, // Facing front,
-        exposure: 0.8
-    };
+    const inclination: 0.5074;
+    const azimuth: 0.25;
+    const uniforms = sky.material.uniforms;
+    uniforms[ "turbidity" ].value = 10;
+    uniforms[ "rayleigh" ].value = 2;
+    uniforms[ "mieCoefficient" ].value = 0.1;
+    uniforms[ "mieDirectionalG" ].value = 0.941;
+    const theta = Math.PI * (inclination - 0.5);
+    const phi = 2 * Math.PI * (azimuth - 0.5);
 
-    function guiChanged() {
-        var uniforms = sky.material.uniforms;
-        uniforms[ "turbidity" ].value = effectController.turbidity;
-        uniforms[ "rayleigh" ].value = effectController.rayleigh;
-        uniforms[ "mieCoefficient" ].value = effectController.mieCoefficient;
-        uniforms[ "mieDirectionalG" ].value = effectController.mieDirectionalG;
+    sun.x = Math.cos( phi );
+    sun.y = Math.sin( phi ) * Math.sin(theta);
+    sun.z = Math.sin( phi ) * Math.cos(theta);
 
-        var theta = Math.PI * ( effectController.inclination - 0.5 );
-        var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
-
-        sun.x = Math.cos( phi );
-        sun.y = Math.sin( phi ) * Math.sin( theta );
-        sun.z = Math.sin( phi ) * Math.cos( theta );
-
-        uniforms[ "sunPosition" ].value.copy( sun );
-
-        renderer.toneMappingExposure = effectController.exposure;
-    }
-    //var gui = new GUI();
-
-    //gui.add( effectController, "turbidity", 0.0, 20.0, 0.1 ).onChange( guiChanged );
-    //gui.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
-    //gui.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
-    //gui.add( effectController, "mieDirectionalG", 0.0, 1, 0.001 ).onChange( guiChanged );
-    //gui.add( effectController, "inclination", 0, 1, 0.0001 ).onChange( guiChanged );
-    //gui.add( effectController, "azimuth", 0, 1, 0.0001 ).onChange( guiChanged );
-    //gui.add( effectController, "exposure", 0, 1, 0.0001 ).onChange( guiChanged );
-
-    guiChanged();
+    uniforms[ "sunPosition" ].value.copy(sun);
+    renderer.toneMappingExposure = 0.8
 }
 
 
-function animate() {
+function animate () {
     const delta = clock.getDelta();
     requestAnimationFrame(animate);
     controls.update(delta);
