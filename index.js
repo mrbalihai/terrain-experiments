@@ -88,8 +88,8 @@ function initSky () {
 
     sun = new THREE.Vector3();
 
-    const inclination: 0.5074;
-    const azimuth: 0.25;
+    const inclination = 0.5074;
+    const azimuth = 0.25;
     const uniforms = sky.material.uniforms;
     uniforms[ "turbidity" ].value = 10;
     uniforms[ "rayleigh" ].value = 2;
