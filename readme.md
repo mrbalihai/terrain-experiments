@@ -2,6 +2,8 @@
 - data.bin taken from here https://github.com/turban/webgl-terrain/tree/master/assets
 - Based on examples in [this blog](https://blog.mastermaps.com/2013/10/terrain-building-with-threejs.html) and the [ThreeJS documentation](https://threejs.org/docs/)
 
+[https://mrbalihai.github.io/terrain-experiments](https://mrbalihai.github.io/terrain-experiments)
+
 ## About
 I've always wanted to build a functioning navigation system like on the [Alien movie landing scene](https://youtu.be/Hzcje9gDtgw?t=65) (basically the Joy Division Unknown Pleasures album cover). This my experiment to get a feel for how it might work.
 The code is mostly made up from modified samples from the resources mentioned at the top.
@@ -12,6 +14,7 @@ If I re-visit this I want to see if I can I can stream height data and have accu
 ## Getting Started
 An index.html file is included that uses browser-native module loading.
 
-'''
+```
 npm install && npm start
-'''
+```
+
